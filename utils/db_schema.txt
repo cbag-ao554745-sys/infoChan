@@ -1,0 +1,52 @@
+-- Admins Table
+CREATE TABLE admins (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    id_number VARCHAR(6) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL  -- Will store bcrypt hash
+);
+
+-- Instructors Table
+CREATE TABLE instructors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    id_number VARCHAR(6) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL  -- Will store bcrypt hash
+);
+
+-- Students Table
+CREATE TABLE students (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    strand ENUM('STEM', 'ABM', 'HUMSS', 'GAS') NOT NULL,
+    grade_level ENUM('Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12') NOT NULL,
+    id_number VARCHAR(6) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL  -- Will store bcrypt hash
+);
+
+-- Books Table
+CREATE TABLE books (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    category ENUM('Fiction', 'Science', 'History', 'Technology', 'Arts', 'Education') NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    edition VARCHAR(50) NOT NULL,
+    publication VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    isbn VARCHAR(13) UNIQUE NOT NULL,
+    status ENUM('Available', 'Borrowed', 'Overdue') DEFAULT 'Available',
+    reason_pdf_path VARCHAR(255) DEFAULT NULL  -- Optional path to uploaded PDF reason
+);
+
+-- Borrowing History Table
+CREATE TABLE borrowing_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,  -- References user ID (could be student/instructor)
+    user_type ENUM('Student', 'Instructor') NOT NULL,
+    book_id INT NOT NULL,
+    date_borrowed DATETIME NOT NULL,
+    date_returned DATETIME DEFAULT NULL,
+    return_status ENUM('Active', 'Returned', 'Returned Late', 'Overdue') DEFAULT 'Active',
+    `condition` ENUM('Excellent', 'Good', 'Fair', '-') DEFAULT '-',
+    fine DECIMAL(10, 2) DEFAULT 0.00,
+    FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
+);
